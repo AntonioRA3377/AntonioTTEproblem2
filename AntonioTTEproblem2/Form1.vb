@@ -1,5 +1,4 @@
-﻿Imports System.Windows.Forms.VisualStyles.VisualStyleElement
-Imports MySql.Data.MySqlClient
+﻿Imports MySql.Data.MySqlClient
 
 Public Class Form1
 
@@ -13,7 +12,10 @@ Public Class Form1
                 Dim table As New DataTable()
                 adapter.Fill(table)
                 DataGridView1.DataSource = table
-                DataGridView1.Columns("id").Visible = False
+
+                If DataGridView1.Columns.Contains("id") Then
+                    DataGridView1.Columns("id").Visible = False
+                End If
             End Using
         Catch ex As Exception
             MsgBox(ex.Message)
@@ -29,15 +31,13 @@ Public Class Form1
         Try
             Using conn As New MySqlConnection(connectionString)
                 conn.Open()
-                Dim query As String = "INSERT INTO tracks_tbl(id, title, artist, genre, duration) VALUES (@id, @title, @artist, @genre,@duration)"
+                Dim query As String = "INSERT INTO tracks_tbl(id, title, artist, genre, duration) VALUES (@id, @title, @artist, @genre, @duration)"
                 Using cmd As New MySqlCommand(query, conn)
-
                     cmd.Parameters.AddWithValue("@id", LabelID.Text)
                     cmd.Parameters.AddWithValue("@title", TextBox4.Text)
                     cmd.Parameters.AddWithValue("@artist", TextBox2.Text)
                     cmd.Parameters.AddWithValue("@genre", ComboBox1.Text)
-                    cmd.Parameters.AddWithValue("@duration", TextBox3)
-
+                    cmd.Parameters.AddWithValue("@duration", TextBox3.Text)
                     cmd.ExecuteNonQuery()
                 End Using
             End Using
@@ -52,14 +52,14 @@ Public Class Form1
         Try
             Using conn As New MySqlConnection(connectionString)
                 conn.Open()
-                Dim query As String = "UPDATE tracks_tbl SET title=@title, artist=@artist, genre=@genre, WHERE id=@id"
+                Dim query As String = "UPDATE tracks_tbl SET title=@title, artist=@artist, genre=@genre, duration=@duration WHERE id=@id"
                 Using cmd As New MySqlCommand(query, conn)
-
                     cmd.Parameters.AddWithValue("@id", LabelID.Text)
                     cmd.Parameters.AddWithValue("@title", TextBox4.Text)
                     cmd.Parameters.AddWithValue("@artist", TextBox2.Text)
                     cmd.Parameters.AddWithValue("@genre", ComboBox1.Text)
-
+                    cmd.Parameters.AddWithValue("@duration", TextBox3.Text)
+                    cmd.ExecuteNonQuery()
                 End Using
             End Using
             MsgBox("Track updated successfully!")
@@ -109,26 +109,11 @@ Public Class Form1
                 TextBox4.Text = row.Cells("title").Value.ToString()
                 TextBox2.Text = row.Cells("artist").Value.ToString()
                 ComboBox1.Text = row.Cells("genre").Value.ToString()
-
+                TextBox3.Text = row.Cells("duration").Value.ToString()
             End If
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
     End Sub
 
-    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox4.TextChanged
-
-    End Sub
-
-    Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs)
-
-    End Sub
-
-    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
-
-    End Sub
-
-    Private Sub LabelID_TextChanged(sender As Object, e As EventArgs) Handles LabelID.TextChanged
-
-    End Sub
 End Class
